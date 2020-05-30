@@ -5,22 +5,47 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.Executors;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.tasks.TaskExecutionException;
 
 public abstract class IbelloTask extends DefaultTask {
+	
+	private File directory;
+	private File argumentsFile;
+	
+	public File getDirectory() {
+		return directory;
+	}
+	
+	public void setDirectory(File directory) {
+		this.directory = directory;
+	}
+	
+	public File getArgumentsFile() {
+		return argumentsFile;
+	}
+	
+	public void setArgumentsFile(File arguments) {
+		this.argumentsFile = arguments;
+	}
 
-	protected void runProcess(String ... args) {
+	protected void runProcess(String command) {
 		ProcessBuilder builder = new ProcessBuilder();
-		builder.command(getCalculatedCommand(args));
+		List<String> calculated = getCalculatedCommand(command);
+		System.out.println("Running command: " + String.join(" ", calculated));
+		builder.command(calculated);
 		builder.directory(getProject().getProjectDir());
+		builder.redirectErrorStream(true);
 		Process process;
 		try {
 			process = builder.start();
 		} catch (IOException ex) {
 			throw new TaskExecutionException(this, ex);
 		}
+		StreamGobbler stdout = new StreamGobbler(process.getInputStream(), System.out::println);
+		Executors.newSingleThreadExecutor().submit(stdout);
 		try {
 			int exitCode = process.waitFor();
 			if (exitCode > 0) {
@@ -32,9 +57,9 @@ public abstract class IbelloTask extends DefaultTask {
 		}
 	}
 	
-	private List<String> getCalculatedCommand(String ... args) {
+	protected List<String> getCalculatedCommand(String command) {
 		List<String> result = new ArrayList<>();
-		// command
+		// script file
 		File rootDir = calculateRootDirectory();
 		if (rootDir != null) {
 			File file = new File(rootDir, calculateCommandName());
@@ -42,26 +67,37 @@ public abstract class IbelloTask extends DefaultTask {
 		} else {
 			result.add(calculateCommandName());
 		}
+		// command
+		result.add(command);
 		// directory
 		File dir = calculateDirectory();
 		if (dir != null) {
-			result.add("--directory");
-			result.add(dir.getAbsolutePath());
+			appendArgument(result, "--directory", dir.getAbsolutePath());
+		}
+		// arguments
+		if (argumentsFile != null) {
+			appendArgument(result, "--arguments", argumentsFile.getAbsolutePath());
 		}
 		// language
 		String language = calculateLanguage();
-		if (language != null && !language.trim().isEmpty()) {
-			result.add("--language");
-			result.add(language.trim());
-		}
-		// other arguments
-		for (String arg : args) {
-			result.add(arg);
-		}
+		appendArgument(result, "--language", language);
 		return result;
 	}
 	
+	protected void appendArgument(List<String> arguments, String key, String value) {
+		if (value != null) {
+			value = value.trim();
+			if (!value.isEmpty()) {
+				arguments.add(key);
+				arguments.add(value);
+			}
+		}
+	}
+	
 	protected File calculateDirectory() {
+		if (directory != null) {
+			return directory;
+		}
 		IbelloPluginExtension extension = getIbelloExtension();
 		if (extension != null && extension.getDirectory() != null) {
 			return extension.getDirectory();

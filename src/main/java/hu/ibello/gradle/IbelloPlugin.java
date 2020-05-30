@@ -7,17 +7,28 @@ public class IbelloPlugin implements Plugin<Project>{
 
 	@Override
 	public void apply(Project project) {
-		IbelloPluginExtension extension = project.getExtensions().create("ibello", IbelloPluginExtension.class);
+		project.getExtensions().create("ibello", IbelloPluginExtension.class);
 		
 		registerTaskType(project, IbelloVersion.class);
 		registerTaskType(project, IbelloCucumber.class);
 		registerTaskType(project, IbelloRun.class);
 		registerTaskType(project, IbelloClean.class);
+		registerTaskType(project, IbelloUpdate.class);
+		registerTaskType(project, IbelloDocgen.class);
 		registerTaskType(project, IbelloHelp.class);
+		
+		registerObject(project, "CHROME", "chrome");
+		registerObject(project, "FIREFOX", "firefox");
+		registerObject(project, "OPERA", "opera");
+		registerObject(project, "EDGE", "edge");
 	}
 	
 	private void registerTaskType(Project project, Class<?> type) {
-		project.getExtensions().getExtraProperties().set(type.getSimpleName(), type);
+		registerObject(project, type.getSimpleName(), type);
+	}
+
+	private void registerObject(Project project, String name, Object value) {
+		project.getExtensions().getExtraProperties().set(name, value);
 	}
 
 }
