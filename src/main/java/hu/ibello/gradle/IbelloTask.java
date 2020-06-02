@@ -12,6 +12,8 @@ import org.gradle.api.tasks.TaskExecutionException;
 
 public abstract class IbelloTask extends DefaultTask {
 	
+	private final static String PID_FILE = "./ibello/ibello.pid";
+	
 	private File directory;
 	private File argumentsFile;
 	
@@ -129,13 +131,17 @@ public abstract class IbelloTask extends DefaultTask {
 		}
 	}
 	
+	protected String getPidFile() {
+		return PID_FILE;
+	}
+	
 	private IbelloPluginExtension getIbelloExtension() {
 		return getProject().getExtensions().getByType(IbelloPluginExtension.class);
 	}
 	
 	private boolean isWindows() {
-		String OS = System.getProperty("os.name", "generic").toLowerCase(Locale.ENGLISH);
-		return OS.indexOf("win") >= 0;
+		String os = System.getProperty("os.name", "generic").toLowerCase(Locale.ENGLISH);
+		return os.indexOf("win") >= 0;
 	}
 
 }

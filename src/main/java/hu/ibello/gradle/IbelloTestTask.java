@@ -69,6 +69,8 @@ public abstract class IbelloTestTask extends IbelloTask {
 		if (repeat > 1) {
 			appendArgument(result, "--repeat", Integer.toString(repeat));
 		}
+		appendArgument(result, "--pid", getPidFile());
 		return result;
 	}
+	
 }

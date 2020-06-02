@@ -9,7 +9,7 @@ public class IbelloCucumber extends IbelloTestTask {
 
 	private File featuresDir;
 	private String java;
-	
+
 	public File getFeaturesDir() {
 		return featuresDir;
 	}
