@@ -1,75 +1,10 @@
-apply plugin: "java"
-apply plugin: "maven-publish"
-apply plugin: "signing"
+// building
 
-group 'hu.ibello'
-version '1.0'
+apply plugin: "java"
 
 repositories {
     mavenLocal()
     mavenCentral()
-}
-
-java {
-    withJavadocJar()
-    withSourcesJar()
-}
-
-signing {
-    sign configurations.archives
-}
-
-ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
-
-tasks.withType(Sign) {
-    onlyIf { isReleaseVersion }
-}
-
-publishing {
-    repositories {
-        maven {
-            def releaseRepo = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
-            def snapshotRepo = "https://oss.sonatype.org/content/repositories/snapshots/"
-            url = isReleaseVersion ? releaseRepo : snapshotRepo
-            credentials {
-                username = "$ossrhUsername"
-                password = "$ossrhPassword"
-            }
-        }
-    }
-    
-    publications {
-        mavenJava(MavenPublication) {
-            pom {
-	            groupId 'hu.ibello'
-                name = 'Ibello Gradle Plugin'
-                description = 'Gradle plugin for the ibello test framework.'
-                url = 'https://github.com/kokog78/ibello-gradle-plugin'
-	            from components.java
-
-                scm {
-                    connection = 'scm:git:https://github.com/kokog78/ibello-gradle-plugin.git'
-                    developerConnection = 'scm:git:git@github.com:kokog78/ibello-gradle-plugin.git'
-                    url = 'https://github.com/kokog78/ibello-gradle-plugin'
-                }
-
-                licenses {
-                    license {
-                        name = 'The Apache License, Version 2.0'
-                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                    }
-                }
-
-                developers {
-                    developer {
-                        id = 'kokog'
-                        name = 'Kornel Simon'
-                        email = 'kornel.simon@ibello.hu'
-                    }
-                }
-            }
-        }
-    }
 }
 
 dependencies {
@@ -78,8 +13,82 @@ dependencies {
 	testCompile group: 'junit', name: 'junit', version: '4.12'
 }
 
-task stage(group: 'build', dependsOn: ['build', 'publishToMavenLocal']) {
-	description 'Build the project and publish it to the local Maven repository.'
+// signing
+
+apply plugin: "signing"
+
+signing {
+    sign configurations.archives
+}
+
+// deploying
+
+apply plugin: "maven"
+
+task javadocJar(type: Jar) {
+    classifier = 'javadoc'
+    from javadoc
+}
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+artifacts {
+    archives javadocJar, sourcesJar
+}
+
+group 'hu.ibello'
+version '1.0'
+
+// build, sign and upload
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+
+            // Sign POM
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+            // Destination
+            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                authentication(userName: ossrhUsername, password: ossrhPassword)
+            }
+            snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                authentication(userName: ossrhUsername, password: ossrhPassword)
+            }
+
+            // Add required metadata to POM
+            pom.project {
+                name 'Ibello Gradle Plugin'
+                packaging 'jar'
+                description 'Gradle plugin for the ibello test framework.'
+                url 'https://github.com/kokog78/ibello-gradle-plugin'
+
+                scm {
+                    connection 'scm:git:git://github.com/kokog78/ibello-gradle-plugin.git'
+                        developerConnection 'scm:git:ssh://github.com/kokog78/ibello-gradle-plugin.git'
+                        url 'http://github.com/kokog78/ibello-gradle-plugin'
+                }
+
+                licenses {
+                    license {
+                        name 'The Apache License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id 'kokog'
+                        name 'Kornél Simon'
+                        email 'kornel.simon@ibello.hu'
+                        organization 'ibello'
+                        organizationUrl 'https://ibello.hu'
+                    }
+                }
+            }
+        }
+    }
 }
 
 /*
