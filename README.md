@@ -16,12 +16,12 @@ In the `build.gradle` file, you need to add these lines:
 
 ```groovy
 buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'hu.ibello:ibello-gradle-plugin:1.0'
-    }
+	repositories {
+		mavenCentral()
+	}
+	dependencies {
+		classpath 'hu.ibello:ibello-gradle-plugin:1.0'
+	}
 }
 
 apply plugin: 'hu.ibello.gradle'
@@ -34,7 +34,7 @@ You have a top-level configuration block for general parameters:
 ```groovy
 ibello {
 	installDir file('/path/to/my/ibello/installation')
-    directory file('/path/to/my/project')
+	directory file('/path/to/my/project')
 	language 'hu'
 }
 ```
@@ -123,7 +123,7 @@ task mySmokeTestsWithIbello(type: IbelloRun, group: 'ibello') {
 	java '*Smoke*'
 	browser CHROME
 	headless true
-    tags 'one', 'two', 'three'
+	tags 'one', 'two', 'three'
 }
 ```
 
