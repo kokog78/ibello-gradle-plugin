@@ -8,7 +8,7 @@ and
 
 https://ibello.hu
 
-Plugin version: 1.0. Ibello version should greater than or equal to 1.13.0. 
+Plugin version: 1.1. Ibello version should greater than or equal to 1.13.0. 
 
 ## Configuration
 
