@@ -91,6 +91,9 @@ public abstract class IbelloTask extends DefaultTask {
 			value = value.trim();
 			if (!value.isEmpty()) {
 				arguments.add(key);
+				if (value.contains(" ")) {
+					value = String.format("\"%s\"", value);
+				}
 				arguments.add(value);
 			}
 		}

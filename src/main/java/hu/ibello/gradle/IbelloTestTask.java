@@ -1,9 +1,20 @@
 package hu.ibello.gradle;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+
+import org.gradle.api.Project;
+import org.gradle.api.artifacts.Configuration;
+import org.gradle.api.artifacts.ConfigurationContainer;
+import org.gradle.api.file.FileCollection;
+import org.gradle.api.plugins.JavaPluginConvention;
+import org.gradle.api.tasks.SourceSet;
 
 public abstract class IbelloTestTask extends IbelloTask {
-
+	
 	private List<String> tags;
 	private boolean headless;
 	private String browser;
@@ -70,7 +81,67 @@ public abstract class IbelloTestTask extends IbelloTask {
 			appendArgument(result, "--repeat", Integer.toString(repeat));
 		}
 		appendArgument(result, "--pid", getPidFile());
+		for (File file : getDependencyFiles()) {
+			appendArgument(result, "--classpath", file.getAbsolutePath());
+		}
 		return result;
+	}
+	
+	private List<File> getDependencyFiles() {
+		List<File> result = new ArrayList<>();
+		ConfigurationContainer configurations = getProject().getConfigurations();
+		if (configurations != null) {
+			Configuration config = getResolvedConfiguration(configurations, "runtime");
+			if (config == null) {
+				config = getResolvedConfiguration(configurations, "runtimeClasspath");
+				if (config == null) {
+					config = getResolvedConfiguration(configurations, "default");
+				}
+			}
+			if (config != null) {
+				Set<File> files = config.getFiles();
+				if (files != null) {
+					for (File file : files) {
+						if (file.getName().startsWith("ibello")) {
+							// skip this file
+						} else {
+							result.add(file);
+						}
+					}
+				}
+			}
+		}
+		SourceSet sourceSet = getMainSourceSet();
+		if (sourceSet != null && sourceSet.getOutput() != null) {
+			FileCollection files = sourceSet.getOutput().getClassesDirs();
+			if (files != null) {
+				for (File dir : files) {
+					result.add(dir);
+				}
+			}
+			if (sourceSet.getOutput().getResourcesDir() != null) {
+				result.add(sourceSet.getOutput().getResourcesDir());
+			}
+		}
+		Collections.sort(result);
+		return result;
+	}
+	
+	private Configuration getResolvedConfiguration(ConfigurationContainer configurations, String name) {
+		Configuration config = configurations.getByName(name);
+		if (config != null && config.isCanBeResolved()) {
+			return config;
+		} else {
+			return null;
+		}
+	}
+	
+	private SourceSet getMainSourceSet() {
+		JavaPluginConvention java = getProject().getConvention().getPlugin(JavaPluginConvention.class);
+		if (java != null) {
+			return java.getSourceSets().getByName("main");
+		}
+		return null;
 	}
 	
 }

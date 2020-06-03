@@ -1,5 +1,6 @@
 package hu.ibello.gradle;
 
+import org.gradle.api.DefaultTask;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 
@@ -34,6 +35,9 @@ public class IbelloPlugin implements Plugin<Project> {
 		
 		IbelloUpdate update = createTask(project, "ibelloUpdateAll", IbelloUpdate.class, "Update all webdrivers and remove unused ones.");
 		update.setRemove(true);
+
+		// undocumented task, used in development / testing
+		project.getTasks().create("ibelloInternal", IbelloInternal.class);
 	}
 	
 	private void registerTaskType(Project project, Class<?> type) {
@@ -44,7 +48,7 @@ public class IbelloPlugin implements Plugin<Project> {
 		project.getExtensions().getExtraProperties().set(name, value);
 	}
 	
-	private <T extends IbelloTask> T createTask(Project project, String name, Class<T> type, String description) {
+	private <T extends DefaultTask> T createTask(Project project, String name, Class<T> type, String description) {
 		T task = project.getTasks().create(name, type);
 		task.setGroup("ibello");
 		task.setDescription(description);

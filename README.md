@@ -116,6 +116,8 @@ The task types are:
   - `java`: you can specify the java package name of your glue-code here as a string.
   - `featuresDir`: you can specify the directory of your feature files if it is not the default one (the `features` subdirectory of you project).
 
+The testing tasks are always using the classpath and dependencies of the current gradle project. If the `directory` parameter is specified then only the non-classpath related files (ibello configurations, feature files, test data files, ...) are used from that directory. If there are java classes and other dependencies in that referenced directory then they also should be defined in the current gradle project.
+
 Example:
 
 ```groovy
@@ -124,6 +126,14 @@ task mySmokeTestsWithIbello(type: IbelloRun, group: 'ibello') {
 	browser CHROME
 	headless true
 	tags 'one', 'two', 'three'
+}
+```
+
+Dependencies marked with the `api` keyword are not used by the tests directly. This is the reason why the `ibello-api` dependency - which is provided by the ibello installation - should be added with that keyword to the project. For example:
+
+```groovy
+dependencies {
+    api 'hu.ibello:ibello-api:1.13.0'
 }
 ```
 
