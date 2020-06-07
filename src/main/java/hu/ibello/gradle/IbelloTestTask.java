@@ -14,17 +14,17 @@ import org.gradle.api.tasks.SourceSet;
 
 public abstract class IbelloTestTask extends IbelloTask {
 	
-	private List<String> tags;
+	private String[] tags;
 	private boolean headless;
 	private String browser;
 	private int[] size;
 	private int repeat = 0;
 	
-	public List<String> getTags() {
+	public String[] getTags() {
 		return tags;
 	}
 	
-	public void setTags(List<String> tags) {
+	public void setTags(String ... tags) {
 		this.tags = tags;
 	}
 	
