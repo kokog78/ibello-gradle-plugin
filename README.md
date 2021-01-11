@@ -6,7 +6,7 @@ https://github.com/kokog78/ibello-api
 
 and
 
-https://ibello.hu
+https://ibello.eu
 
 Plugin version: 1.1. Ibello version should greater than or equal to 1.13.0. 
 
@@ -62,7 +62,7 @@ The plugin will add a few tasks to your gradle environment. All of them are in t
 Many task types are available in the plugin. Each of them has some common properties:
 
 - `directory`: same as in the global settings, you just can specify the ibello project for each tasks if you want.
-- `argumentsFile`: should be a file, ibello will load it's arguments from this file. You can read more about it in the documentation: https://ibello.hu/ibello/public/#documentation-cli.
+- `argumentsFile`: should be a file, ibello will load it's arguments from this file. You can read more about it in the documentation: https://ibello.eu/documentation-cli.
 
 Here are the task types:
 
@@ -74,7 +74,7 @@ Here are the task types:
   - `browser`: the type of the browser, it can be: `CHROME`, `FIREFOX`, `OPERA`, `EDGE`. The plugin defines these variable for you. If you do not specify it, all available webdrivers will be updated.
   - `remove`: set it to `true` if you want to remove unused webdrivers.
 - `IbelloStop`: stops all tests started from the same ibello directory.
-- `IbelloDocgen`: documentation generation with ibello. You can read more about it here: https://ibello.hu/ibello/public/#documentation-docgen. Additional parameters:
+- `IbelloDocgen`: documentation generation with ibello. You can read more about it here: https://ibello.eu/documentation-docgen. Additional parameters:
   - `inputFile`: the input file (as a `File` instance).
   - `outputFile`: the output file (as a `File` instance). Optional, if you do not specify it then ibello will find out automatically, and the generated documentation will be in the `ibello/output` folder.
   - `overwrite`: a boolean parameter, you need to specify it if you want to forcefully overwrite existing files.
@@ -102,7 +102,7 @@ task generateFancyDocs(type: IbelloDocgen, group: 'ibello') {
 
 The tasks below are running tests and they have some extra parameters. These ones:
 
-- `tags`: list of ibello tags. Read more about tags in the documentation: https://ibello.hu/ibello/public/#documentation-configuration.
+- `tags`: list of ibello tags. Read more about tags in the documentation: https://ibello.eu/documentation-configuration.
 - `browser`: the type of the browser you want to use. It's value can be: `CHROME`, `FIREFOX`, `OPERA`, `EDGE`. The plugin defines these variable for you.
 - `headless`: a boolean parameter, if you want to run your tests in headless mode (without a browser window), you need to set it to `true`.
 - `size`: default size of the browser window (as a numeric list), for example "1024, 768".
