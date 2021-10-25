@@ -88,24 +88,15 @@ public abstract class IbelloTestTask extends IbelloTask {
 	
 	private List<File> getDependencyFiles() {
 		List<File> result = new ArrayList<>();
-		ConfigurationContainer configurations = getProject().getConfigurations();
-		if (configurations != null) {
-			Configuration config = getResolvedConfiguration(configurations, "runtime");
-			if (config == null) {
-				config = getResolvedConfiguration(configurations, "runtimeClasspath");
-				if (config == null) {
-					config = getResolvedConfiguration(configurations, "default");
-				}
-			}
-			if (config != null) {
-				Set<File> files = config.getFiles();
-				if (files != null) {
-					for (File file : files) {
-						if (file.getName().startsWith("ibello")) {
-							// skip this file
-						} else {
-							result.add(file);
-						}
+		List<Configuration> configurations = getConfigurations();
+		for (Configuration config : configurations) {
+			Set<File> files = config.getFiles();
+			if (files != null) {
+				for (File file : files) {
+					if (file.getName().startsWith("ibello")) {
+						// skip this file
+					} else {
+						result.add(file);
 					}
 				}
 			}
@@ -123,6 +114,30 @@ public abstract class IbelloTestTask extends IbelloTask {
 			}
 		}
 		Collections.sort(result);
+		return result;
+	}
+	
+	private List<Configuration> getConfigurations() {
+		List<Configuration> result = new ArrayList<>();
+		ConfigurationContainer configurations = getProject().getConfigurations();
+		if (configurations != null) {
+			Configuration config = getResolvedConfiguration(configurations, "runtime");
+			if (config != null) {
+				result.add(config);
+			}
+			config = getResolvedConfiguration(configurations, "runtimeClasspath");
+			if (config != null) {
+				result.add(config);
+			}
+			config = getResolvedConfiguration(configurations, "implementation");
+			if (config != null) {
+				result.add(config);
+			}
+			config = getResolvedConfiguration(configurations, "default");
+			if (config != null) {
+				result.add(config);
+			}
+		}
 		return result;
 	}
 	
