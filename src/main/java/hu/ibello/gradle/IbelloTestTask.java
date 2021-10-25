@@ -95,7 +95,7 @@ public abstract class IbelloTestTask extends IbelloTask {
 				for (File file : files) {
 					if (file.getName().startsWith("ibello")) {
 						// skip this file
-					} else {
+					} else if (!result.contains(file)) {
 						result.add(file);
 					}
 				}
