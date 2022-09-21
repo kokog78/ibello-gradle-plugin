@@ -74,7 +74,7 @@ Here are the task types:
   - `browser`: the type of the browser, it can be: `CHROME`, `FIREFOX`, `OPERA`, `EDGE`. The plugin defines these variable for you. If you do not specify it, all available webdrivers will be updated.
   - `remove`: set it to `true` if you want to remove unused webdrivers.
 - `IbelloStop`: stops all tests started from the same ibello directory.
-- `IbelloDocgen`: documentation generation with ibello. You can read more about it here: https://ibello.eu/documentation-docgen. Additional parameters:
+- `IbelloDocgen`: documentation generation with ibello. You can read more about it here: https://ibello.eu/documentation-document-generation. Additional parameters:
   - `inputFile`: the input file (as a `File` instance).
   - `outputFile`: the output file (as a `File` instance). Optional, if you do not specify it then ibello will find out automatically, and the generated documentation will be in the `ibello/output` folder.
   - `overwrite`: a boolean parameter, you need to specify it if you want to forcefully overwrite existing files.
